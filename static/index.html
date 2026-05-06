@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>DigitAI — Handwritten Digit Recognition</title>
+  <meta name="description" content="CNN recognizing handwritten digits 0–9 with 99.34% accuracy."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+  <!-- GSAP for one-shot hero only. Chart.js deferred. Nothing else. -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+  <link rel="stylesheet" href="/static/style.css"/>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="ldr"><div class="ldr-w">
+  <div class="ldr-logo">Digit<span>AI</span></div>
+  <div class="ldr-bar"><div class="ldr-fill" id="lf"></div></div>
+  <div class="ldr-msg mono" id="lm">Initializing…</div>
+</div></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-in">
+    <a href="#" class="nav-logo">Digit<span>AI</span></a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li><li><a href="#workflow">Model</a></li>
+      <li><a href="#demo">Demo</a></li><li><a href="#stats">Stats</a></li>
+    </ul>
+    <a href="#demo" class="btn-pri" style="padding:8px 18px;font-size:.82rem">Try Demo</a>
+    <button class="ham" id="ham" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+  </div>
+  <div class="mob-nav" id="mob-nav">
+    <a href="#about" onclick="closeMob()">About</a><a href="#workflow" onclick="closeMob()">Model</a>
+    <a href="#demo" onclick="closeMob()">Demo</a><a href="#stats" onclick="closeMob()">Stats</a>
+    <a href="#demo" class="btn-pri" onclick="closeMob()">Try Demo</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero" style="position:relative">
+  <div class="container hero-grid">
+    <div class="hero-left">
+      <div class="badge" id="hb"><span class="bdot"></span>Model live · 99.34% accuracy</div>
+      <h1 class="h1" id="h1">
+        <span>Handwritten</span>
+        <span class="grad-text">Digit</span>
+        <span>Recognition</span>
+      </h1>
+      <p class="h-p" id="hp">A convolutional neural network trained on 70,000 MNIST images. Draw any digit and get an instant, accurate prediction powered by ONNX Runtime.</p>
+      <div class="hero-btns" id="hbtns">
+        <a href="#demo" class="btn-pri">Try Live Demo</a>
+        <a href="#workflow" class="btn-ghost">View Architecture</a>
+      </div>
+    </div>
+    <!-- Pure CSS stat grid — no JS, no WebGL, no lag -->
+    <div class="hero-right">
+      <div class="h-stat wide">
+        <div class="hst-l">Test Accuracy</div>
+        <div class="hst-v">99.34%</div>
+        <div class="hst-d">Validated on 10,000 held-out MNIST images</div>
+      </div>
+      <div class="h-stat">
+        <div class="hst-l">Training Set</div>
+        <div class="hst-v">70K</div>
+        <div class="hst-d">MNIST images</div>
+      </div>
+      <div class="h-stat">
+        <div class="hst-l">Classes</div>
+        <div class="hst-v">0 → 9</div>
+        <div class="hst-d">All ten digits</div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-cue" id="sc"><span>Scroll</span><div class="sc-ln"></div></div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="s-alt">
+  <div class="container">
+    <div class="two-col">
+      <div class="reveal">
+        <div class="stag">About</div>
+        <h2 class="sh2">Teaching machines<br>to <span class="grad-text">read.</span></h2>
+        <div class="divider"></div>
+        <p class="sp">A deep CNN built in PyTorch, trained on 70,000 MNIST handwritten digit images. Achieves 99.34% test accuracy — matching human-level recognition on all 10 digit classes.</p>
+        <p class="sp" style="margin-top:12px">Exported to ONNX Runtime for sub-100ms real-time inference with under 50MB memory usage.</p>
+        <div class="pills"><span class="pill">PyTorch</span><span class="pill">MNIST</span><span class="pill">Conv2D</span><span class="pill">Adam</span><span class="pill">ONNX</span></div>
+      </div>
+      <div class="col-cards">
+        <div class="card gc reveal d1"><div class="gc-ico">🧠</div><div class="gc-t">Deep Learning</div><div class="gc-d">Two Conv2D blocks extract spatial features — edges, curves, and stroke patterns — without manual feature engineering.</div></div>
+        <div class="card gc reveal d2"><div class="gc-ico">⚡</div><div class="gc-t">99.34% Accuracy</div><div class="gc-d">Exceeded 99% validation accuracy from epoch 4. F1-score ≥ 0.99 across all digit classes.</div></div>
+        <div class="card gc reveal d3"><div class="gc-ico">🚀</div><div class="gc-t">Real-Time Inference</div><div class="gc-d">ONNX Runtime: 0.02MB model file, ~50MB RAM, sub-100ms response time per prediction.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WORKFLOW -->
+<section id="workflow">
+  <div class="container">
+    <div class="sec-hd reveal" style="text-align:center">
+      <div class="stag">CNN Pipeline</div>
+      <h2 class="sh2" style="text-align:center">How the model <span class="grad-text">thinks.</span></h2>
+      <p class="sp" style="text-align:center;margin:0 auto;max-width:480px">Six stages transform a 28×28 pixel image into a digit prediction.</p>
+    </div>
+    <div class="pipeline reveal">
+      <div class="pl-s"><div class="pl-ico">🖼️</div><div class="pl-n">Input</div><div class="pl-d">28×28<br>grayscale</div></div>
+      <div class="pl-arr">→</div>
+      <div class="pl-s"><div class="pl-ico">🔍</div><div class="pl-n">Conv2D×2</div><div class="pl-d">32+64<br>filters</div></div>
+      <div class="pl-arr">→</div>
+      <div class="pl-s"><div class="pl-ico">⬇️</div><div class="pl-n">MaxPool×2</div><div class="pl-d">2×2<br>spatial</div></div>
+      <div class="pl-arr">→</div>
+      <div class="pl-s"><div class="pl-ico">📏</div><div class="pl-n">Flatten</div><div class="pl-d">3,136<br>features</div></div>
+      <div class="pl-arr">→</div>
+      <div class="pl-s"><div class="pl-ico">💡</div><div class="pl-n">Dense+Drop</div><div class="pl-d">128 units<br>30% drop</div></div>
+      <div class="pl-arr">→</div>
+      <div class="pl-s out"><div class="pl-ico">🎯</div><div class="pl-n">Softmax</div><div class="pl-d">10 class<br>probs</div></div>
+    </div>
+    <div class="arch-grid">
+      <div class="card reveal"><strong>Conv2D</strong><p>Learnable 3×3 filters detect edges, curves, and digit stroke patterns automatically.</p></div>
+      <div class="card reveal d1"><strong>MaxPooling</strong><p>2×2 windows halve spatial dimensions while retaining dominant features and adding translation invariance.</p></div>
+      <div class="card reveal d2"><strong>ReLU Activation</strong><p>f(x)=max(0,x) introduces non-linearity so the model can learn complex decision boundaries.</p></div>
+      <div class="card reveal d3"><strong>Softmax Output</strong><p>Converts 10 raw logits to probabilities summing to 1. Argmax yields the predicted digit.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- DEMO -->
+<section id="demo" class="s-alt">
+  <div class="container">
+    <div class="sec-hd reveal" style="text-align:center">
+      <div class="stag">Live Demo</div>
+      <h2 class="sh2" style="text-align:center">Draw. Predict. <span class="grad-text">Marvel.</span></h2>
+      <p class="sp" style="text-align:center;margin:0 auto;max-width:440px">Write any digit (0–9) on the canvas — the CNN predicts it in real time.</p>
+    </div>
+    <div class="demo-wrap">
+      <div class="demo-col reveal">
+        <div class="tabs">
+          <button class="dtab active" id="td" onclick="switchTab('draw')">✏️ Draw</button>
+          <button class="dtab" id="tu" onclick="switchTab('upload')">📎 Upload</button>
+        </div>
+        <div class="dcard" id="draw-panel">
+          <div class="dcard-hd">
+            <span>Draw a digit (0–9)</span>
+            <div class="brush-row">
+              <span class="mono" style="font-size:.71rem;color:var(--t3)">Brush</span>
+              <input type="range" id="brush" min="8" max="30" value="18" class="rng"/>
+              <span class="mono" id="bval" style="font-size:.71rem;color:var(--blue)">18</span>
+            </div>
+          </div>
+          <div class="cv-wrap"><canvas id="draw-canvas" width="320" height="320"></canvas><div class="cv-hint" id="cv-hint">Draw here</div></div>
+          <div class="d-btns">
+            <button class="btn-pri full" id="pred-btn" onclick="predictCanvas()"><span class="spin-r" id="ps"></span><span id="pl">Predict Digit</span></button>
+            <button class="btn-icon" onclick="clearCanvas()" title="Clear"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>
+          </div>
+        </div>
+        <div class="dcard" id="upload-panel" style="display:none">
+          <div class="dcard-hd"><span>Upload digit image</span></div>
+          <div class="dropz" id="dropz" onclick="document.getElementById('fi').click()" ondragover="dov(event)" ondragleave="dlv()" ondrop="ddp(event)">
+            <div style="font-size:2rem;margin-bottom:8px">📁</div>
+            <strong>Click to browse</strong> or drag & drop
+          </div>
+          <input type="file" id="fi" accept="image/*" onchange="fsv(event)" style="display:none"/>
+          <img id="pimg" style="display:none;width:100%;border-radius:10px;margin-top:12px" alt="Preview"/>
+          <div id="ubtns" style="display:none;margin-top:12px">
+            <button class="btn-pri full" id="upbtn" onclick="predictUpload()"><span class="spin-r" id="us"></span><span id="ul">Predict Digit</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="demo-col demo-col-right reveal d1">
+        <div class="res-card" id="res-card">
+          <div class="res-empty" id="res-empty"><div class="res-ico">🎯</div><div>Draw or upload a digit<br>to see the prediction</div></div>
+          <div class="scanning" id="scanning" style="display:none"><div class="sc-ring"></div><div class="sc-bar"></div><div class="sc-txt">Analyzing…</div></div>
+          <div class="res-body" id="res-body" style="display:none">
+            <div class="res-top"><div class="res-dig" id="rdig">—</div><div><div class="res-sub">Predicted digit</div><div class="res-conf" id="rconf">—</div><div class="res-sub">confidence</div></div></div>
+            <div><div class="probs-ttl">All class probabilities</div><div id="probs"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section id="stats">
+  <div class="container">
+    <div class="sec-hd reveal" style="text-align:center"><div class="stag">Performance</div><h2 class="sh2" style="text-align:center">Numbers that <span class="grad-text">prove it.</span></h2></div>
+    <div class="stats-grid">
+      <div class="card stat-card reveal"><div class="sn"><span data-count="9934" data-div="100">0</span>%</div><div class="sl">Test Accuracy</div></div>
+      <div class="card stat-card reveal d1"><div class="sn"><span data-count="70000">0</span></div><div class="sl">Training Images</div></div>
+      <div class="card stat-card reveal d2"><div class="sn"><span data-count="10">0</span></div><div class="sl">Epochs Trained</div></div>
+      <div class="card stat-card reveal d3"><div class="sn"><span data-count="10">0</span></div><div class="sl">Digit Classes</div></div>
+    </div>
+    <div class="charts-row">
+      <div class="card chart-card reveal"><div class="ct-lbl">Accuracy curve</div><div class="ch"><canvas id="acc-ch"></canvas></div></div>
+      <div class="card chart-card reveal d1"><div class="ct-lbl">Loss curve</div><div class="ch"><canvas id="loss-ch"></canvas></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- TIMELINE -->
+<section id="timeline" class="s-alt">
+  <div class="container">
+    <div class="sec-hd reveal" style="text-align:center"><div class="stag">Build Process</div><h2 class="sh2" style="text-align:center">Project <span class="grad-text">timeline.</span></h2></div>
+    <div class="tl">
+      <div class="tl-item reveal"><div class="tl-dot"></div><div class="tl-card card"><div class="tl-ph">Phase 01</div><div class="tl-t">Dataset Preparation</div><div class="tl-d">Loaded MNIST (70,000 images), normalized pixels 0→1, applied mean/std standardization, reshaped to (1×28×28) tensors.</div></div></div>
+      <div class="tl-item reveal d1"><div class="tl-dot"></div><div class="tl-card card"><div class="tl-ph">Phase 02</div><div class="tl-t">CNN Architecture</div><div class="tl-d">Two Conv2D blocks (32+64 filters), MaxPool for spatial reduction, Dense(128) + Dropout(0.3), Softmax head for 10 classes.</div></div></div>
+      <div class="tl-item reveal d2"><div class="tl-dot"></div><div class="tl-card card"><div class="tl-ph">Phase 03</div><div class="tl-t">Training & Evaluation</div><div class="tl-d">10 epochs, Adam optimizer (lr=0.001), batch size 64, CrossEntropy loss. Achieved 99.34% test accuracy with F1 ≥ 0.99 across all classes.</div></div></div>
+      <div class="tl-item reveal d3"><div class="tl-dot"></div><div class="tl-card card"><div class="tl-ph">Phase 04</div><div class="tl-t">Production Deployment</div><div class="tl-d">Exported to ONNX (0.02MB). FastAPI server with ONNX Runtime. Responsive frontend. Ready for Render / Railway deployment.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container ft-in">
+    <div><div class="ft-logo">Digit<span>AI</span></div><div class="ft-tag">Convolutional Intelligence · 99.34% Accuracy</div><div class="ft-maker">Made by <strong>Bishnu Kumar Singh</strong></div></div>
+    <div class="ft-contact">
+      <div class="ft-ctitle">Contact</div>
+      <a class="ft-crow" href="mailto:nsgbitooyt@gmail.com"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>nsgbitooyt@gmail.com</a>
+      <a class="ft-crow" href="https://wa.me/918768592672" target="_blank" rel="noopener"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>+91 8768592672</a>
+    </div>
+    <div class="ft-links"><a href="#demo">Demo</a><a href="#workflow">Model</a><a href="/docs" target="_blank">API Docs</a></div>
+  </div>
+  <div class="container ft-bot">
+    <span>Built with PyTorch · FastAPI · ONNX Runtime · Chart.js · © Bishnu Kumar Singh</span>
+    <div class="tchips"><span>PyTorch</span><span>FastAPI</span><span>ONNX</span><span>GSAP</span></div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+<script src="/static/app.js"></script>
+</body>
+</html>
