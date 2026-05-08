@@ -411,9 +411,10 @@ async function startCamera() {
     
     try {
         camStream = await navigator.mediaDevices.getUserMedia({ 
-            video: { facingMode: 'environment', aspectRatio: 1 } 
+            video: { facingMode: { ideal: 'environment' } } 
         });
         video.srcObject = camStream;
+        await video.play();
         video.style.display = 'block';
         hint.style.display = 'none';
         btn.disabled = false;
