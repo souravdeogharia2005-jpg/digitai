@@ -140,6 +140,7 @@
         <div class="tabs">
           <button class="dtab active" id="td" onclick="switchTab('draw')">✏️ Draw</button>
           <button class="dtab" id="tu" onclick="switchTab('upload')">📎 Upload</button>
+          <button class="dtab" id="tc" onclick="switchTab('camera')">📷 Camera</button>
         </div>
         <div class="dcard" id="draw-panel">
           <div class="dcard-hd">
@@ -168,10 +169,20 @@
             <button class="btn-pri full" id="upbtn" onclick="predictUpload()"><span class="spin-r" id="us"></span><span id="ul">Predict Digit</span></button>
           </div>
         </div>
+        <div class="dcard" id="camera-panel" style="display:none">
+          <div class="dcard-hd"><span>Show digit to camera</span></div>
+          <div class="cv-wrap" style="background:#000;">
+            <video id="cam-video" autoplay playsinline style="width:100%; aspect-ratio:1; object-fit:cover; display:none; transform: scaleX(-1);"></video>
+            <div class="cv-hint" id="cam-hint" style="color:#fff; opacity:0.8;">Requesting camera...</div>
+          </div>
+          <div class="d-btns">
+            <button class="btn-pri full" id="cam-btn" onclick="predictCamera()" disabled><span class="spin-r" id="cs"></span><span id="cl">Capture & Predict</span></button>
+          </div>
+        </div>
       </div>
       <div class="demo-col demo-col-right reveal d1">
         <div class="res-card" id="res-card">
-          <div class="res-empty" id="res-empty"><div class="res-ico">🎯</div><div>Draw or upload a digit<br>to see the prediction</div></div>
+          <div class="res-empty" id="res-empty"><div class="res-ico">🎯</div><div>Draw, upload, or capture<br>a digit to see prediction</div></div>
           <div class="scanning" id="scanning" style="display:none"><div class="sc-ring"></div><div class="sc-bar"></div><div class="sc-txt">Analyzing…</div></div>
           <div class="res-body" id="res-body" style="display:none">
             <div class="res-top"><div class="res-dig" id="rdig">—</div><div><div class="res-sub">Predicted digit</div><div class="res-conf" id="rconf">—</div><div class="res-sub">confidence</div></div></div>
