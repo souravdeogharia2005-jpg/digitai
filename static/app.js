@@ -404,23 +404,35 @@ async function startCamera() {
     
     if (camStream) return;
     
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        hint.textContent = 'Camera API not supported (ensure HTTPS)';
+        showToast('Secure context required (HTTPS)', 'err');
+        return;
+    }
+    
     video.style.display = 'none';
     hint.textContent = 'Requesting camera...';
     hint.style.display = 'flex';
     btn.disabled = true;
     
     try {
-        camStream = await navigator.mediaDevices.getUserMedia({ 
-            video: { facingMode: { ideal: 'environment' } } 
-        });
+        try {
+            camStream = await navigator.mediaDevices.getUserMedia({ 
+                video: { facingMode: { exact: 'environment' } } 
+            });
+        } catch (e) {
+            camStream = await navigator.mediaDevices.getUserMedia({ video: true });
+        }
         video.srcObject = camStream;
-        await video.play();
+        video.onloadedmetadata = () => {
+            video.play().catch(err => console.warn("Play error:", err));
+        };
         video.style.display = 'block';
         hint.style.display = 'none';
         btn.disabled = false;
     } catch (err) {
-        hint.textContent = 'Camera access denied or unavailable.';
-        showToast('Could not access camera', 'err');
+        hint.textContent = 'Camera access denied: ' + (err.name || err.message);
+        showToast('Camera error: ' + (err.name || err.message), 'err');
         console.error(err);
     }
 }
